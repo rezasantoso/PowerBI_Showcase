@@ -30,45 +30,45 @@
       "values": [
         {
           "source_stack": 1, "source_sort": 2,
-          "source": "NAP 3",
+          "source": "NAPLAN 3",
           "dest_stack" : 2, "dest_sort": 99,
           "destination" : "left NAP 3",
           "value": 5
         },
         {
           "source_stack": 1, "source_sort": 2,
-          "source": "NAP 3",
+          "source": "NAPLAN 3",
           "dest_stack" : 3, "dest_sort": 1,
-          "destination" : "NAP 5",
+          "destination" : "NAPLAN 5",
           "value": 15
         },
         {
           "source_stack": 2, "source_sort": 1,
-          "source": "Unmatched NAP 5",
+          "source": "Unmatched NAPLAN 5",
           "dest_stack" : 3, "dest_sort": 1,
-          "destination" : "NAP 5",
-          "value" : 2
+          "destination" : "NAPLAN 5",
+          "value" : 5
         },
 
         {
           "source_stack": 3, "source_sort": 1,
-          "source": "NAP 5",
+          "source": "NAPLAN 5",
           "dest_stack" : 4, "dest_sort": 99,
           "destination" : "left NAP 5",
           "value": 5
         },
         {
           "source_stack": 3, "source_sort": 1,
-          "source": "NAP 5",
+          "source": "NAPLAN 5",
           "dest_stack" : 5, "dest_sort": 1,
-          "destination" : "NAP 7",
+          "destination" : "NAPLAN 7",
           "value": 15
         },
         {
           "source_stack": 4, "source_sort": 1,
-          "source": "Unmatched NAP 7",
+          "source": "Unmatched NAPLAN 7",
           "dest_stack" : 5, "dest_sort": 1,
-          "destination" : "NAP 7",
+          "destination" : "NAPLAN 7",
           "value" : 2
         }
       ]
@@ -324,7 +324,7 @@
         },
         "hover": {
           "tooltip": {
-            "signal": "{'Name':datum.name, 'Value':format(datum.value, '$') + 'B'}"
+            "signal": "{'Name':datum.name, '# Student(s)':datum.value}"
           },
           "fillOpacity": {"value": 1}
         }
@@ -345,8 +345,78 @@
         "hover": {
           "strokeOpacity": {"value": 1},
           "tooltip": {
-            "signal": "{'Source':datum.source,'Destination':datum.destination, 'Value':format(datum.value, '$') + 'B'}"
+            "signal": "{'Source':datum.source,'Destination':datum.destination, '# Student(s)':datum.value}"
           }
+        }
+      }
+    },
+    {
+      "type": "group",
+      "name": "labelText",
+      "zindex": 1,
+      "from": {
+        "facet": {
+          "data": "finalTable",
+          "name": "labelFacet",
+          "groupby": ["name", "stack", "yc", "value", "labels"]
+        }
+      },
+      "clip": false,
+      "encode": {
+        "update": {
+          "strokeWidth": {"value": 1},
+          "stroke": {"value": "red"},
+          "x": {
+            "signal": "datum.labels=='left'?scale('x', datum.stack)-8 : scale('x', datum.stack) + (bandwidth('x')) +8"
+          },
+          "yc": {"scale": "y", "signal": "datum.yc"},
+          "width": {"signal": "0"},
+          "height": {"signal": "0"},
+          "fillOpacity": {"signal": "0.1"}
+        }
+      },
+      "marks": [
+        {
+          "type": "text",
+          "name": "heading",
+          "from": {"data": "labelFacet"},
+          "encode": {
+            "update": {
+              "x": {"value": 0},
+              "y": {"value": -2},
+              "text": {"field": "name"},
+              "align": {"signal": "datum.labels=='left'?'right':'left'"},
+              "fontWeight": {"value": "normal"}
+            }
+          }
+        },
+        {
+          "type": "text",
+          "name": "amount",
+          "from": {"data": "labelFacet"},
+          "encode": {
+            "update": {
+              "x": {"value": 0},
+              "y": {"value": 12},
+              "text": {"signal": "'Student(s): ' + datum.value "},
+              "align": {"signal": "datum.labels=='left'?'right':'left'"}
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "rect",
+      "from": {"data": "labelText"},
+      "encode": {
+        "update": {
+          "x": {"field": "bounds.x1", "offset": -3},
+          "x2": {"field": "bounds.x2", "offset": 3},
+          "y": {"field": "bounds.y1", "offset": -3},
+          "y2": {"field": "bounds.y2", "offset": 3},
+          "fill": {"value": "white"},
+          "opacity": {"value": 0.8},
+          "cornerRadius": {"value": 4}
         }
       }
     },
